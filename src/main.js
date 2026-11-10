@@ -31,6 +31,7 @@ const btnThemeToggle = document.getElementById('btn-theme-toggle');
 const fileSidebar = document.getElementById('file-sidebar');
 const fileList = document.getElementById('file-list');
 const btnCloseSidebar = document.getElementById('btn-close-sidebar');
+const btnToggleSidebar = document.getElementById('btn-toggle-sidebar');
 
 const editorDropzone = document.getElementById('editor-dropzone');
 const dropOverlay = document.getElementById('drop-overlay');
@@ -45,12 +46,26 @@ const btnTogglePreviewPane = document.getElementById('btn-toggle-preview-pane');
 
 // --- State ---
 let currentFileHandle = null;
+let currentNativeFilePath = null;
 let currentFileName = 'welcome.md';
 let isDirty = false;
 let directoryFiles = []; // Array of { name, path, loadText: async () => string, handle? }
 let activeFileIndex = -1;
 let renderTimer = null;
 let mermaidCounter = 0;
+
+// --- Native macOS AppKit / WKWebView Bridge ---
+function isNativeMacApp() {
+  return Boolean(window.webkit?.messageHandlers?.nativeHost);
+}
+
+function sendNativeMessage(action, payload = {}) {
+  if (isNativeMacApp()) {
+    window.webkit.messageHandlers.nativeHost.postMessage({ action, ...payload });
+    return true;
+  }
+  return false;
+}
 
 // --- Lazy-load DOMPurify fallback per sanitize-untrusted-html guidance ---
 let domPurifyPromise;
@@ -278,6 +293,12 @@ function toggleMarkdownCheckbox(targetIndex, isChecked) {
   }
 }
 
+function getFormattedStats(text = editor.value) {
+  const lines = text.split('\n').length;
+  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+  return `${lines} ${lines === 1 ? 'line' : 'lines'} · ${words} ${words === 1 ? 'word' : 'words'}`;
+}
+
 function updateStatsAndLineNumbers(text) {
   const lines = text.split('\n').length;
   const words = text.trim() ? text.trim().split(/\s+/).length : 0;
@@ -294,16 +315,28 @@ function updateStatsAndLineNumbers(text) {
     lineNumbers.textContent = nums;
     lineNumbers.dataset.count = String(lines);
   }
+
+  sendNativeMessage('documentEdited', {
+    isDirty,
+    fileName: currentFileName,
+    stats: `${lines} ${lines === 1 ? 'line' : 'lines'} · ${words} ${words === 1 ? 'word' : 'words'}`
+  });
 }
 
 function setDirty(dirty) {
   isDirty = dirty;
   dirtyIndicator.hidden = !dirty;
+  sendNativeMessage('documentEdited', {
+    isDirty: dirty,
+    fileName: currentFileName,
+    stats: getFormattedStats()
+  });
 }
 
-function setDocument(name, content, sourceLabel = 'Local file', handle = null) {
+function setDocument(name, content, sourceLabel = 'Local file', handle = null, nativePath = null) {
   currentFileName = name;
   currentFileHandle = handle;
+  currentNativeFilePath = nativePath;
   filenameBadge.textContent = name;
   fileSourceType.textContent = sourceLabel;
   editor.value = content;
@@ -317,6 +350,9 @@ function setDocument(name, content, sourceLabel = 'Local file', handle = null) {
 
 // 1. Open Single Local File
 btnOpenFile.addEventListener('click', async () => {
+  if (sendNativeMessage('openFile')) {
+    return;
+  }
   if ('showOpenFilePicker' in window) {
     try {
       const [handle] = await window.showOpenFilePicker({
@@ -352,6 +388,9 @@ fileInput.addEventListener('change', async (e) => {
 
 // 2. Open Local Folder of Markdown Files
 btnOpenFolder.addEventListener('click', async () => {
+  if (sendNativeMessage('openFolder')) {
+    return;
+  }
   if ('showDirectoryPicker' in window) {
     try {
       const dirHandle = await window.showDirectoryPicker();
@@ -434,19 +473,41 @@ async function selectSidebarFile(index, sourceLabel) {
     }
   });
 
+  if (item.nativePath && isNativeMacApp()) {
+    sendNativeMessage('readFileAtPath', { path: item.nativePath, sourceLabel });
+    return;
+  }
+
   const text = await item.loadText();
   setDocument(item.name, text, sourceLabel, item.handle);
 }
 
+function toggleSidebarVisibility() {
+  fileSidebar.hidden = !fileSidebar.hidden;
+  requestAnimationFrame(() => rebuildScrollSyncMap());
+}
+
 btnCloseSidebar.addEventListener('click', () => {
   fileSidebar.hidden = true;
+  requestAnimationFrame(() => rebuildScrollSyncMap());
 });
 
+btnToggleSidebar?.addEventListener('click', toggleSidebarVisibility);
+
 // 3. Save File to Disk
-async function saveCurrentFile() {
+async function saveCurrentFile(forceSaveAs = false) {
   const content = editor.value;
 
-  if (currentFileHandle && 'createWritable' in currentFileHandle) {
+  if (isNativeMacApp()) {
+    sendNativeMessage(forceSaveAs ? 'saveFileAs' : 'saveFile', {
+      content,
+      path: currentNativeFilePath,
+      suggestedName: currentFileName || 'document.md'
+    });
+    return;
+  }
+
+  if (!forceSaveAs && currentFileHandle && 'createWritable' in currentFileHandle) {
     try {
       const writable = await currentFileHandle.createWritable();
       await writable.write(content);
@@ -496,7 +557,7 @@ async function saveCurrentFile() {
   fileSourceType.textContent = 'Downloaded .md';
 }
 
-btnSaveFile.addEventListener('click', saveCurrentFile);
+btnSaveFile.addEventListener('click', () => saveCurrentFile(false));
 
 btnSample.addEventListener('click', () => {
   setDocument('welcome.md', SAMPLE_MARKDOWN, 'Built-in Demo', null);
@@ -764,6 +825,7 @@ previewContainer.addEventListener(
 );
 
 chkSyncScroll.addEventListener('change', () => {
+  sendNativeMessage('syncScrollChanged', { enabled: chkSyncScroll.checked });
   if (chkSyncScroll.checked) {
     rebuildScrollSyncMap();
     lockScrollSource('editor');
@@ -806,21 +868,24 @@ const SNIPPETS = {
     `\n\`\`\`mermaid\nflowchart TD\n    Start["Start Idea"] --> Build["Write Markdown"]\n    Build --> Render["Live GFM + Mermaid Preview"]\n\`\`\`\n`
 };
 
+function insertSnippetByType(type) {
+  const generator = SNIPPETS[type];
+  if (!generator) return;
+
+  const start = editor.selectionStart;
+  const end = editor.selectionEnd;
+  const selected = editor.value.slice(start, end);
+  const replacement = generator(selected);
+
+  editor.focus();
+  editor.setRangeText(replacement, start, end, 'end');
+  setDirty(true);
+  scheduleRender();
+}
+
 document.querySelectorAll('[data-insert]').forEach((btn) => {
   btn.addEventListener('click', () => {
-    const type = btn.dataset.insert;
-    const generator = SNIPPETS[type];
-    if (!generator) return;
-
-    const start = editor.selectionStart;
-    const end = editor.selectionEnd;
-    const selected = editor.value.slice(start, end);
-    const replacement = generator(selected);
-
-    editor.focus();
-    editor.setRangeText(replacement, start, end, 'end');
-    setDirty(true);
-    scheduleRender();
+    insertSnippetByType(btn.dataset.insert);
   });
 });
 
@@ -861,6 +926,8 @@ function setMinimizedPane(minimizedTarget) {
   btnTogglePreviewPane.title = isPreviewMin
     ? 'Restore Preview pane'
     : 'Minimize Preview pane';
+
+  sendNativeMessage('paneModeChanged', { minimized: minimizedTarget ?? null });
 
   // Rebuild section scroll anchors once layout settles
   requestAnimationFrame(() => {
@@ -926,6 +993,54 @@ splitter.addEventListener('keydown', (e) => {
     document.documentElement.style.setProperty('--editor-ratio', `${Math.min(80, current + 3)}%`);
   }
 });
+
+// --- Expose Native macOS App Bridge on window.markdownStudio ---
+window.markdownStudio = {
+  loadNativeFile({ name, path, content, sourceLabel = 'macOS Native File' }) {
+    setDocument(name, content, sourceLabel, null, path);
+  },
+  loadNativeFolder({ folderName, files }) {
+    const entries = files.map((file) => ({
+      name: file.name,
+      nativePath: file.path,
+      handle: null,
+      loadText: async () => ''
+    }));
+    populateFileSidebar(entries, `Folder: ${folderName}`);
+  },
+  didSaveNativeFile({ name, path }) {
+    currentFileName = name;
+    currentNativeFilePath = path;
+    filenameBadge.textContent = name;
+    fileSourceType.textContent = 'Saved to disk (macOS)';
+    setDirty(false);
+  },
+  triggerSave(forceSaveAs = false) {
+    saveCurrentFile(forceSaveAs);
+  },
+  newDocument() {
+    setDocument('untitled.md', '# Untitled Document\n\n', 'New Document', null, null);
+  },
+  resetDemo() {
+    setDocument('welcome.md', SAMPLE_MARKDOWN, 'Built-in Demo', null, null);
+  },
+  setPaneMode(mode) {
+    setMinimizedPane(mode);
+  },
+  insertSnippet(type) {
+    insertSnippetByType(type);
+  },
+  toggleSidebar() {
+    toggleSidebarVisibility();
+  },
+  toggleSyncScroll() {
+    chkSyncScroll.checked = !chkSyncScroll.checked;
+    chkSyncScroll.dispatchEvent(new Event('change'));
+  },
+  toggleTheme() {
+    btnThemeToggle.click();
+  }
+};
 
 // --- Initialize App ---
 initMermaidTheme();
