@@ -85,6 +85,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSToolbarDelegate, WKS
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        if let iconURL = Bundle.main.url(forResource: "AppIcon", withExtension: "icns"),
+           let appIcon = NSImage(contentsOf: iconURL) {
+            NSApp.applicationIconImage = appIcon
+        }
         setupMainMenu()
         setupWindowAndWebView()
     }
