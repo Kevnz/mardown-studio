@@ -13,32 +13,54 @@
       color-scheme: light;
     }
 
-    /* Raw light & dark color pairs */
+    /* macOS Native Surface & Material Tokens */
     --bg-canvas-light: #ffffff;
-    --bg-canvas-dark: #0d1117;
+    --bg-canvas-dark: #16181d;
 
-    --bg-subtle-light: #f6f8fa;
-    --bg-subtle-dark: #161b22;
+    --bg-editor-light: #fbfcfd;
+    --bg-editor-dark: #131519;
 
-    --bg-elevated-light: #eaeef2;
-    --bg-elevated-dark: #21262d;
+    --bg-subtle-light: #f3f4f6;
+    --bg-subtle-dark: #1c1f26;
 
-    --fg-default-light: #1f2328;
-    --fg-default-dark: #e6edf3;
+    --bg-toolbar-light: rgba(245, 246, 248, 0.88);
+    --bg-toolbar-dark: rgba(28, 31, 38, 0.88);
 
-    --fg-muted-light: #59636e;
-    --fg-muted-dark: #8b949e;
+    --bg-elevated-light: #e7eaef;
+    --bg-elevated-dark: #282c35;
 
-    --border-default-light: #d0d7de;
-    --border-default-dark: #30363d;
+    --bg-control-light: #ffffff;
+    --bg-control-dark: #2b303b;
 
-    --accent-fg-light: #0969da;
-    --accent-fg-dark: #4493f8;
+    --bg-segmented-well-light: rgba(0, 0, 0, 0.06);
+    --bg-segmented-well-dark: rgba(255, 255, 255, 0.07);
 
-    --accent-emphasis-light: #0969da;
-    --accent-emphasis-dark: #1f6feb;
+    --fg-default-light: #1d1f23;
+    --fg-default-dark: #eceff4;
 
-    /* Alert semantic tokens */
+    --fg-muted-light: #636973;
+    --fg-muted-dark: #8e96a4;
+
+    --fg-subtle-light: #8c939e;
+    --fg-subtle-dark: #5e6572;
+
+    --border-default-light: rgba(0, 0, 0, 0.11);
+    --border-default-dark: rgba(255, 255, 255, 0.1);
+
+    --border-control-light: rgba(0, 0, 0, 0.14);
+    --border-control-dark: rgba(255, 255, 255, 0.14);
+
+    --shadow-control-light: 0 1px 1.5px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    --shadow-control-dark: 0 1px 2px rgba(0, 0, 0, 0.35), inset 0 0.5px 0 rgba(255, 255, 255, 0.12);
+
+    /* macOS System Blue Accent */
+    --accent-fg-light: #0066cc;
+    --accent-fg-dark: #47a1ff;
+
+    --accent-emphasis-light: #007aff;
+    --accent-emphasis-dark: #0a84ff;
+
+    /* GitHub Alert Semantic Tokens */
     --note-light: #0969da;
     --note-dark: #4493f8;
     --tip-light: #1a7f37;
@@ -52,11 +74,18 @@
 
     /* Fallback defaults for browsers without light-dark() */
     --bg-canvas: var(--bg-canvas-light);
+    --bg-editor: var(--bg-editor-light);
     --bg-subtle: var(--bg-subtle-light);
+    --bg-toolbar: var(--bg-toolbar-light);
     --bg-elevated: var(--bg-elevated-light);
+    --bg-control: var(--bg-control-light);
+    --bg-segmented-well: var(--bg-segmented-well-light);
     --fg-default: var(--fg-default-light);
     --fg-muted: var(--fg-muted-light);
+    --fg-subtle: var(--fg-subtle-light);
     --border-default: var(--border-default-light);
+    --border-control: var(--border-control-light);
+    --shadow-control: var(--shadow-control-light);
     --accent-fg: var(--accent-fg-light);
     --accent-emphasis: var(--accent-emphasis-light);
     --color-note: var(--note-light);
@@ -67,11 +96,18 @@
 
     @media (prefers-color-scheme: dark) {
       --bg-canvas: var(--bg-canvas-dark);
+      --bg-editor: var(--bg-editor-dark);
       --bg-subtle: var(--bg-subtle-dark);
+      --bg-toolbar: var(--bg-toolbar-dark);
       --bg-elevated: var(--bg-elevated-dark);
+      --bg-control: var(--bg-control-dark);
+      --bg-segmented-well: var(--bg-segmented-well-dark);
       --fg-default: var(--fg-default-dark);
       --fg-muted: var(--fg-muted-dark);
+      --fg-subtle: var(--fg-subtle-dark);
       --border-default: var(--border-default-dark);
+      --border-control: var(--border-control-dark);
+      --shadow-control: var(--shadow-control-dark);
       --accent-fg: var(--accent-fg-dark);
       --accent-emphasis: var(--accent-emphasis-dark);
       --color-note: var(--note-dark);
@@ -83,11 +119,18 @@
 
     @supports (color: light-dark(white, black)) {
       --bg-canvas: light-dark(var(--bg-canvas-light), var(--bg-canvas-dark));
+      --bg-editor: light-dark(var(--bg-editor-light), var(--bg-editor-dark));
       --bg-subtle: light-dark(var(--bg-subtle-light), var(--bg-subtle-dark));
+      --bg-toolbar: light-dark(var(--bg-toolbar-light), var(--bg-toolbar-dark));
       --bg-elevated: light-dark(var(--bg-elevated-light), var(--bg-elevated-dark));
+      --bg-control: light-dark(var(--bg-control-light), var(--bg-control-dark));
+      --bg-segmented-well: light-dark(var(--bg-segmented-well-light), var(--bg-segmented-well-dark));
       --fg-default: light-dark(var(--fg-default-light), var(--fg-default-dark));
       --fg-muted: light-dark(var(--fg-muted-light), var(--fg-muted-dark));
+      --fg-subtle: light-dark(var(--fg-subtle-light), var(--fg-subtle-dark));
       --border-default: light-dark(var(--border-default-light), var(--border-default-dark));
+      --border-control: light-dark(var(--border-control-light), var(--border-control-dark));
+      --shadow-control: light-dark(var(--shadow-control-light), var(--shadow-control-dark));
       --accent-fg: light-dark(var(--accent-fg-light), var(--accent-fg-dark));
       --accent-emphasis: light-dark(var(--accent-emphasis-light), var(--accent-emphasis-dark));
       --color-note: light-dark(var(--note-light), var(--note-dark));
@@ -97,8 +140,8 @@
       --color-caution: light-dark(var(--caution-light), var(--caution-dark));
     }
 
-    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
-    --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     --editor-ratio: 50%;
 
     accent-color: var(--accent-emphasis);
@@ -114,13 +157,25 @@
     background-color: var(--bg-canvas);
     color: var(--fg-default);
     font-family: var(--font-sans);
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
   }
 
   body {
     display: grid;
     grid-template-rows: auto 1fr auto;
+  }
+
+  /* When running inside the native macOS AppKit NSToolbar window, hide the web fallback header */
+  html.is-native-macos {
+    & .app-header {
+      display: none;
+    }
+
+    & body {
+      grid-template-rows: 1fr auto;
+    }
   }
 
   button, input, textarea {
@@ -130,131 +185,178 @@
 }
 
 @layer components {
-  /* Header & Toolbar */
+  /* Native-Styled Unified Header Bar (Web Mode & Fallback) */
   .app-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding-block: 8px;
-    padding-inline: 16px;
-    background-color: var(--bg-subtle);
+    min-block-size: 46px;
+    padding-block: 6px;
+    padding-inline: 14px;
+    background-color: var(--bg-toolbar);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     border-block-end: 1px solid var(--border-default);
     flex-wrap: wrap;
+    user-select: none;
   }
 
-  .brand {
+  .header-leading,
+  .header-center,
+  .header-trailing {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+  }
+
+  .header-center {
+    gap: 12px;
+  }
+
+  .window-title-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding-block: 3px;
+    padding-inline: 10px;
+    border-radius: 6px;
+    background-color: var(--bg-segmented-well);
+    border: 1px solid var(--border-default);
 
     & h1 {
       margin: 0;
-      font-size: 15px;
+      font-size: 12.5px;
       font-weight: 600;
       letter-spacing: -0.01em;
+      color: var(--fg-default);
     }
   }
 
-  .brand-icon {
-    color: var(--accent-fg);
-  }
-
-  .filename-badge {
-    padding-block: 2px;
-    padding-inline: 8px;
-    border-radius: 6px;
-    background-color: var(--bg-elevated);
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--fg-muted);
-    border: 1px solid var(--border-default);
+  .doc-proxy-icon {
+    color: var(--accent-emphasis);
   }
 
   .dirty-dot {
-    inline-size: 8px;
-    block-size: 8px;
+    inline-size: 7px;
+    block-size: 7px;
     border-radius: 50%;
     background-color: var(--color-warning);
   }
 
-  .toolbar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  .toolbar-group {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .toolbar-divider {
-    inline-size: 1px;
-    block-size: 20px;
-    background-color: var(--border-default);
-    margin-inline: 4px;
-  }
-
-  .btn {
+  /* macOS Native-Styled Push Buttons */
+  .mac-btn {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding-block: 5px;
+    justify-content: center;
+    gap: 5px;
+    block-size: 26px;
     padding-inline: 10px;
     border-radius: 6px;
-    border: 1px solid var(--border-default);
-    background-color: var(--bg-canvas);
+    border: 1px solid var(--border-control);
+    background-color: var(--bg-control);
+    box-shadow: var(--shadow-control);
     color: var(--fg-default);
-    font-size: 12.5px;
+    font-size: 12px;
     font-weight: 500;
     cursor: pointer;
     box-sizing: border-box;
-    transition: background-color 0.12s ease, border-color 0.12s ease;
+    transition: background-color 0.1s ease, transform 0.06s ease;
 
     &:hover:not(:disabled) {
       background-color: var(--bg-elevated);
     }
 
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
     &:focus-visible {
-      outline: 2px solid var(--accent-fg);
+      outline: 2px solid var(--accent-emphasis);
       outline-offset: 1px;
     }
   }
 
-  .btn-primary {
-    background-color: var(--accent-emphasis);
-    color: #ffffff;
-    border-color: transparent;
+  .mac-btn-icon {
+    padding-inline: 7px;
+  }
+
+  /* macOS NSSegmentedControl Track & Segments */
+  .mac-segmented {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px;
+    border-radius: 7px;
+    background-color: var(--bg-segmented-well);
+    border: 1px solid var(--border-default);
+    gap: 1px;
+  }
+
+  .mac-seg-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    block-size: 22px;
+    padding-inline: 9px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--fg-muted);
+    font-size: 11.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.12s ease, color 0.12s ease, box-shadow 0.12s ease;
 
     &:hover:not(:disabled) {
-      filter: brightness(1.08);
-      background-color: var(--accent-emphasis);
+      color: var(--fg-default);
+      background-color: color-mix(in srgb, var(--bg-control) 55%, transparent);
+    }
+
+    &:active:not(:disabled),
+    &[aria-pressed="true"] {
+      background-color: var(--bg-control);
+      color: var(--fg-default);
+      border-color: var(--border-control);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      font-weight: 600;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--accent-emphasis);
+      outline-offset: 1px;
     }
   }
 
-  .btn-icon {
-    padding-block: 5px;
-    padding-inline: 8px;
-  }
-
-  .layout-switcher .btn[aria-pressed="true"] {
-    background-color: var(--accent-emphasis);
-    color: #ffffff;
-    border-color: transparent;
-  }
-
-  .sync-toggle {
+  /* macOS Toggle Pill for Sync Scroll */
+  .mac-pill-toggle {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    font-size: 12.5px;
+    gap: 5px;
+    block-size: 26px;
+    padding-inline: 9px;
+    border-radius: 6px;
+    border: 1px solid var(--border-control);
+    background-color: var(--bg-control);
+    box-shadow: var(--shadow-control);
+    font-size: 11.5px;
+    font-weight: 500;
     color: var(--fg-muted);
     cursor: pointer;
     user-select: none;
-    padding-inline: 6px;
+    box-sizing: border-box;
+    transition: all 0.12s ease;
+
+    & input {
+      display: none;
+    }
+
+    &:has(> input:checked) {
+      background-color: color-mix(in srgb, var(--accent-emphasis) 14%, var(--bg-control));
+      border-color: color-mix(in srgb, var(--accent-emphasis) 45%, var(--border-control));
+      color: var(--accent-fg);
+      font-weight: 600;
+    }
   }
 
   /* Theme toggle icon visibility */
@@ -286,12 +388,12 @@
   .workspace {
     display: flex;
     min-block-size: 0;
-     block-size: 100%;
+    block-size: 100%;
     overflow: hidden;
     position: relative;
   }
 
-  /* File Sidebar */
+  /* macOS Finder-Style Source List Sidebar */
   .file-sidebar {
     inline-size: 220px;
     flex-shrink: 0;
@@ -300,6 +402,7 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    user-select: none;
 
     &[hidden] {
       display: none;
@@ -310,15 +413,16 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-block: 8px;
+    block-size: 32px;
     padding-inline: 12px;
     border-block-end: 1px solid var(--border-default);
 
     & h2 {
       margin: 0;
-      font-size: 12px;
+      font-size: 11px;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
       color: var(--fg-muted);
     }
   }
@@ -326,7 +430,7 @@
   .file-list {
     list-style: none;
     margin: 0;
-    padding: 6px;
+    padding: 8px;
     overflow-y: auto;
     flex: 1;
 
@@ -336,15 +440,19 @@
   }
 
   .file-item-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
     inline-size: 100%;
     text-align: start;
     background: transparent;
     border: none;
-    padding-block: 6px;
-    padding-inline: 8px;
+    padding-block: 5px;
+    padding-inline: 9px;
     border-radius: 6px;
     font-size: 12.5px;
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
+    color: var(--fg-default);
     cursor: pointer;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -357,7 +465,7 @@
     &[aria-current="true"] {
       background-color: var(--accent-emphasis);
       color: #ffffff;
-      font-weight: 600;
+      font-weight: 500;
     }
   }
 
@@ -368,38 +476,66 @@
     min-inline-size: 200px;
     min-block-size: 0;
     overflow: hidden;
-    transition: flex-basis 0.18s ease;
+    transition: flex-basis 0.18s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .editor-pane {
     flex: 0 0 var(--editor-ratio);
+    background-color: var(--bg-editor);
   }
 
   .preview-pane {
     flex: 1 1 0%;
+    background-color: var(--bg-canvas);
   }
 
+  /* Refined Xcode-style Pane Jump Bar */
   .pane-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    padding-block: 6px;
-    padding-inline: 14px;
+    block-size: 32px;
+    padding-inline: 12px;
     background-color: var(--bg-subtle);
     border-block-end: 1px solid var(--border-default);
-    font-size: 12px;
+    font-size: 11.5px;
     color: var(--fg-muted);
     user-select: none;
+    flex-shrink: 0;
   }
 
-  .pane-title {
+  .pane-breadcrumb {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    min-inline-size: 0;
+  }
+
+  .pane-chip {
+    padding-block: 1.5px;
+    padding-inline: 6px;
+    border-radius: 4px;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    background-color: var(--bg-elevated);
+    color: var(--fg-muted);
+    border: 1px solid var(--border-default);
+  }
+
+  .pane-chip-accent {
+    background-color: color-mix(in srgb, var(--accent-emphasis) 14%, transparent);
+    color: var(--accent-fg);
+    border-color: color-mix(in srgb, var(--accent-emphasis) 30%, transparent);
+  }
+
+  .pane-title-text {
     font-weight: 600;
     color: var(--fg-default);
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .pane-actions {
@@ -412,8 +548,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    inline-size: 24px;
-    block-size: 24px;
+    inline-size: 22px;
+    block-size: 22px;
     padding: 0;
     border-radius: 5px;
     border: 1px solid transparent;
@@ -429,39 +565,49 @@
     }
 
     &:focus-visible {
-      outline: 2px solid var(--accent-fg);
+      outline: 2px solid var(--accent-emphasis);
       outline-offset: 1px;
     }
   }
 
   .drop-hint {
-    font-size: 11.5px;
+    font-size: 11px;
+    color: var(--fg-subtle);
+
+    & code {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+    }
   }
 
   .status-pill {
-    padding-block: 1px;
-    padding-inline: 7px;
+    padding-block: 1.5px;
+    padding-inline: 8px;
     border-radius: 999px;
-    font-size: 11px;
+    font-size: 10.5px;
+    font-weight: 500;
     background-color: var(--bg-elevated);
     color: var(--fg-muted);
+    border: 1px solid var(--border-default);
   }
 
   /* Minimized Pane Docked Rail States */
   .workspace[data-minimized="editor"] {
     & .editor-pane {
-      flex: 0 0 38px;
-      min-inline-size: 38px;
+      flex: 0 0 34px;
+      min-inline-size: 34px;
       border-inline-end: 1px solid var(--border-default);
       background-color: var(--bg-subtle);
 
       & .editor-wrapper,
-      & .drop-hint {
+      & .drop-hint,
+      & .pane-chip {
         display: none;
       }
 
       & .pane-header {
         flex: 1;
+        block-size: auto;
         flex-direction: column;
         justify-content: flex-start;
         padding-block: 10px;
@@ -470,7 +616,7 @@
         gap: 14px;
       }
 
-      & .pane-title {
+      & .pane-breadcrumb {
         writing-mode: vertical-rl;
         transform: rotate(180deg);
         order: 2;
@@ -504,18 +650,20 @@
     }
 
     & .preview-pane {
-      flex: 0 0 38px;
-      min-inline-size: 38px;
+      flex: 0 0 34px;
+      min-inline-size: 34px;
       border-inline-start: 1px solid var(--border-default);
       background-color: var(--bg-subtle);
 
       & .preview-scroll-container,
-      & .status-pill {
+      & .status-pill,
+      & .pane-chip {
         display: none;
       }
 
       & .pane-header {
         flex: 1;
+        block-size: auto;
         flex-direction: column;
         justify-content: flex-start;
         padding-block: 10px;
@@ -524,7 +672,7 @@
         gap: 14px;
       }
 
-      & .pane-title {
+      & .pane-breadcrumb {
         writing-mode: vertical-rl;
         order: 2;
       }
@@ -539,18 +687,36 @@
     }
   }
 
-  /* Splitter */
+  /* Tactile macOS NSSplitView Divider */
   .pane-splitter {
-    inline-size: 6px;
+    inline-size: 7px;
     background-color: var(--bg-subtle);
     border-inline: 1px solid var(--border-default);
     cursor: col-resize;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: background-color 0.15s ease;
 
+    & .splitter-pill {
+      inline-size: 3px;
+      block-size: 28px;
+      border-radius: 99px;
+      background-color: var(--fg-subtle);
+      opacity: 0.45;
+      transition: opacity 0.15s ease, background-color 0.15s ease, block-size 0.15s ease;
+    }
+
     &:hover, &:focus-visible {
-      background-color: var(--accent-fg);
+      background-color: color-mix(in srgb, var(--accent-emphasis) 14%, var(--bg-subtle));
       outline: none;
+
+      & .splitter-pill {
+        opacity: 1;
+        block-size: 38px;
+        background-color: var(--accent-emphasis);
+      }
     }
   }
 
@@ -561,36 +727,38 @@
     display: flex;
     min-block-size: 0;
     overflow: hidden;
-    background-color: var(--bg-canvas);
+    background-color: var(--bg-editor);
   }
 
   .line-numbers {
-    padding-block: 16px;
-    padding-inline: 10px;
-    background-color: var(--bg-subtle);
+    padding-block: 20px;
+    padding-inline: 12px 10px;
+    background-color: var(--bg-editor);
     border-inline-end: 1px solid var(--border-default);
-    color: var(--fg-muted);
+    color: var(--fg-subtle);
     font-family: var(--font-mono);
-    font-size: 13.5px;
-    line-height: 1.6;
+    font-size: 13px;
+    line-height: 1.65;
     text-align: end;
     user-select: none;
     overflow: hidden;
-    min-inline-size: 36px;
+    min-inline-size: 42px;
     box-sizing: border-box;
     white-space: pre;
+    font-variant-numeric: tabular-nums;
   }
 
   .markdown-textarea {
     flex: 1;
     border: none;
     resize: none;
-    padding: 16px;
-    background-color: var(--bg-canvas);
+    padding-block: 20px;
+    padding-inline: 20px;
+    background-color: var(--bg-editor);
     color: var(--fg-default);
     font-family: var(--font-mono);
-    font-size: 13.5px;
-    line-height: 1.6;
+    font-size: 13px;
+    line-height: 1.65;
     tab-size: 2;
     outline: none;
     overflow-y: auto;
@@ -602,10 +770,11 @@
   .drop-overlay {
     position: absolute;
     inset: 0;
-    background-color: color-mix(in srgb, var(--accent-emphasis) 14%, var(--bg-canvas) 86%);
-    border: 2px dashed var(--accent-fg);
-    margin: 8px;
-    border-radius: 8px;
+    background-color: color-mix(in srgb, var(--accent-emphasis) 12%, var(--bg-canvas) 88%);
+    backdrop-filter: blur(4px);
+    border: 2px dashed var(--accent-emphasis);
+    margin: 12px;
+    border-radius: 10px;
     display: grid;
     place-items: center;
     z-index: 10;
@@ -630,40 +799,47 @@
   .preview-scroll-container {
     flex: 1;
     overflow-y: auto;
-    padding-block: 24px;
-    padding-inline: 32px;
+    padding-block: 28px;
+    padding-inline: 38px;
     background-color: var(--bg-canvas);
   }
 
-  /* Footer Statusbar */
+  /* Native macOS Bottom Status Bar */
   .app-statusbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-block: 4px;
-    padding-inline: 16px;
+    block-size: 25px;
+    padding-inline: 14px;
     background-color: var(--bg-subtle);
     border-block-start: 1px solid var(--border-default);
-    font-size: 11.5px;
+    font-size: 11px;
     color: var(--fg-muted);
+    user-select: none;
+    font-variant-numeric: tabular-nums;
   }
 
   .status-left, .status-right {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
+  }
+
+  .status-badge {
+    font-weight: 600;
+    color: var(--fg-default);
   }
 }
 
 @layer gfm {
   /* Authentic GitHub Flavored Markdown Styling */
   .markdown-body {
-    max-inline-size: 860px;
+    max-inline-size: 840px;
     margin-inline: auto;
     color: var(--fg-default);
     font-family: var(--font-sans);
     font-size: 15px;
-    line-height: 1.65;
+    line-height: 1.68;
     word-wrap: break-word;
 
     & > *:first-child {
@@ -671,25 +847,26 @@
     }
 
     & h1, & h2, & h3, & h4, & h5, & h6 {
-      margin-block: 24px 16px;
-      font-weight: 600;
+      margin-block: 26px 14px;
+      font-weight: 650;
       line-height: 1.25;
+      letter-spacing: -0.015em;
     }
 
     & h1 {
-      font-size: 2em;
+      font-size: 1.9em;
       padding-block-end: 0.3em;
       border-block-end: 1px solid var(--border-default);
     }
 
     & h2 {
-      font-size: 1.5em;
+      font-size: 1.45em;
       padding-block-end: 0.3em;
       border-block-end: 1px solid var(--border-default);
     }
 
     & h3 {
-      font-size: 1.25em;
+      font-size: 1.2em;
     }
 
     & p, & blockquote, & ul, & ol, & dl, & table, & pre, & details {
@@ -706,9 +883,9 @@
     }
 
     & hr {
-      block-size: 0.25em;
+      block-size: 1px;
       padding: 0;
-      margin-block: 24px;
+      margin-block: 28px;
       background-color: var(--border-default);
       border: 0;
     }
@@ -717,28 +894,28 @@
       margin-inline: 0;
       padding-inline: 1em;
       color: var(--fg-muted);
-      border-inline-start: 0.25em solid var(--border-default);
+      border-inline-start: 3px solid var(--border-default);
     }
 
     & code:not(pre code) {
-      padding-block: 0.2em;
-      padding-inline: 0.4em;
+      padding-block: 0.18em;
+      padding-inline: 0.42em;
       margin: 0;
       font-size: 85%;
       white-space: break-spaces;
       background-color: var(--bg-elevated);
-      border-radius: 6px;
+      border-radius: 5px;
       font-family: var(--font-mono);
     }
 
     & pre {
       padding: 16px;
       overflow: auto;
-      font-size: 85%;
-      line-height: 1.45;
+      font-size: 13px;
+      line-height: 1.5;
       background-color: var(--bg-subtle);
       border: 1px solid var(--border-default);
-      border-radius: 6px;
+      border-radius: 8px;
       font-family: var(--font-mono);
 
       & code {
@@ -752,16 +929,17 @@
     /* GFM Tables */
     & table {
       border-spacing: 0;
-      border-collapse: collapse;
+      border-collapse: separate;
+      border-radius: 8px;
+      border: 1px solid var(--border-default);
       display: block;
       inline-size: max-content;
       max-inline-size: 100%;
-      overflow: auto;
+      overflow: hidden;
     }
 
     & tr {
       background-color: var(--bg-canvas);
-      border-block-start: 1px solid var(--border-default);
 
       &:nth-child(2n) {
         background-color: var(--bg-subtle);
@@ -769,9 +947,18 @@
     }
 
     & th, & td {
-      padding-block: 6px;
-      padding-inline: 13px;
-      border: 1px solid var(--border-default);
+      padding-block: 8px;
+      padding-inline: 14px;
+      border-block-end: 1px solid var(--border-default);
+      border-inline-end: 1px solid var(--border-default);
+
+      &:last-child {
+        border-inline-end: 0;
+      }
+    }
+
+    & tr:last-child td {
+      border-block-end: 0;
     }
 
     & th {
@@ -781,24 +968,24 @@
 
     /* GFM Task Lists */
     & ul:has(> li > input[type="checkbox"]) {
-      padding-inline-start: 0.5em;
+      padding-inline-start: 0.4em;
       list-style: none;
     }
 
     & li > input[type="checkbox"] {
-      margin-inline-end: 0.5em;
+      margin-inline-end: 0.55em;
       vertical-align: middle;
     }
 
     /* GitHub Alerts (> [!NOTE], > [!TIP], > [!IMPORTANT], > [!WARNING], > [!CAUTION]) */
     & .markdown-alert {
-      padding-block: 10px;
+      padding-block: 12px;
       padding-inline: 16px;
       margin-block-end: 16px;
       color: inherit;
-      border-inline-start: 0.25em solid var(--border-default);
+      border-inline-start: 3.5px solid var(--border-default);
       background-color: var(--bg-subtle);
-      border-radius: 0 6px 6px 0;
+      border-radius: 0 8px 8px 0;
 
       & > :last-child {
         margin-block-end: 0;
@@ -820,38 +1007,44 @@
 
     & .markdown-alert-note {
       border-inline-start-color: var(--color-note);
+      background-color: color-mix(in srgb, var(--color-note) 7%, var(--bg-subtle));
       & .markdown-alert-title { color: var(--color-note); }
     }
 
     & .markdown-alert-tip {
       border-inline-start-color: var(--color-tip);
+      background-color: color-mix(in srgb, var(--color-tip) 7%, var(--bg-subtle));
       & .markdown-alert-title { color: var(--color-tip); }
     }
 
     & .markdown-alert-important {
       border-inline-start-color: var(--color-important);
+      background-color: color-mix(in srgb, var(--color-important) 7%, var(--bg-subtle));
       & .markdown-alert-title { color: var(--color-important); }
     }
 
     & .markdown-alert-warning {
       border-inline-start-color: var(--color-warning);
+      background-color: color-mix(in srgb, var(--color-warning) 7%, var(--bg-subtle));
       & .markdown-alert-title { color: var(--color-warning); }
     }
 
     & .markdown-alert-caution {
       border-inline-start-color: var(--color-caution);
+      background-color: color-mix(in srgb, var(--color-caution) 7%, var(--bg-subtle));
       & .markdown-alert-title { color: var(--color-caution); }
     }
 
-    /* Mermaid Diagram Containers */
+    /* Mermaid Diagram Cards */
     & .mermaid-block {
-      margin-block: 16px;
-      padding: 16px;
+      margin-block: 18px;
+      padding: 20px;
       background-color: var(--bg-subtle);
       border: 1px solid var(--border-default);
-      border-radius: 8px;
+      border-radius: 10px;
       overflow-x: auto;
       text-align: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 
       & svg {
         max-inline-size: 100%;
@@ -872,7 +1065,7 @@
 
     & img {
       max-inline-size: 100%;
-      border-radius: 6px;
+      border-radius: 8px;
     }
   }
 
