@@ -69,6 +69,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSToolbarDelegate, WKS
     var window: NSWindow!
     var webView: WKWebView!
     private var pendingOpenFilePath: String?
+    private static let lastOpenedFilePathKey = "MarkdownStudioLastOpenedFilePath"
+    private static let lastOpenedFolderPathKey = "MarkdownStudioLastOpenedFolderPath"
 
     // Native NSToolbar Controls
     private var paneSegmentedControl: NSSegmentedControl!
@@ -157,12 +159,32 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSToolbarDelegate, WKS
         if let startURL = URL(string: "app://markdown-studio/index.html") {
             webView.load(URLRequest(url: startURL))
         }
+    }
 
+    private func restoreInitialDocumentIfNeeded() {
+        // 1. If launched with a specific file from Finder / Dock, open that file first
         if let pending = pendingOpenFilePath {
             pendingOpenFilePath = nil
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
-                self?.loadLocalFileIntoEditor(url: URL(fileURLWithPath: pending), sourceLabel: "Finder Open")
+            let pendingURL = URL(fileURLWithPath: pending)
+            if FileManager.default.fileExists(atPath: pendingURL.path) {
+                loadLocalFileIntoEditor(url: pendingURL, sourceLabel: "Finder Open")
+                return
             }
+        }
+
+        // 2. If a folder was previously opened, restore the folder sidebar list
+        if let lastFolder = UserDefaults.standard.string(forKey: Self.lastOpenedFolderPathKey) {
+            var isDir: ObjCBool = false
+            if FileManager.default.fileExists(atPath: lastFolder, isDirectory: &isDir), isDir.boolValue {
+                loadLocalFolderIntoSidebar(folderURL: URL(fileURLWithPath: lastFolder), autoSelectFirst: false)
+            }
+        }
+
+        // 3. Reopen the last opened file if it still exists on disk
+        if let lastPath = UserDefaults.standard.string(forKey: Self.lastOpenedFilePathKey),
+           FileManager.default.fileExists(atPath: lastPath) {
+            let fileURL = URL(fileURLWithPath: lastPath)
+            loadLocalFileIntoEditor(url: fileURL, sourceLabel: "Restored Last File")
         }
     }
 
@@ -376,6 +398,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSToolbarDelegate, WKS
               let action = body["action"] as? String else { return }
 
         switch action {
+        case "appReady":
+            restoreInitialDocumentIfNeeded()
         case "openFile":
             promptOpenFile()
         case "openFolder":
@@ -459,6 +483,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSToolbarDelegate, WKS
         window.representedURL = url
         window.title = url.lastPathComponent
         NSDocumentController.shared.noteNewRecentDocumentURL(url)
+        UserDefaults.standard.set(url.path, forKey: Self.lastOpenedFilePathKey)
 
         let payload: [String: Any] = [
             "name": url.lastPathComponent,
@@ -469,7 +494,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSToolbarDelegate, WKS
         invokeJS("window.markdownStudio.loadNativeFile", with: payload)
     }
 
-    private func loadLocalFolderIntoSidebar(folderURL: URL) {
+    private func loadLocalFolderIntoSidebar(folderURL: URL, autoSelectFirst: Bool = true) {
         let fm = FileManager.default
         let validExts = Set(["md", "markdown", "mdx", "txt"])
         var fileItems: [[String: String]] = []
@@ -484,10 +509,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSToolbarDelegate, WKS
         }
 
         fileItems.sort { ($0["name"] ?? "") < ($1["name"] ?? "") }
+        UserDefaults.standard.set(folderURL.path, forKey: Self.lastOpenedFolderPathKey)
 
         let payload: [String: Any] = [
             "folderName": folderURL.lastPathComponent,
-            "files": fileItems
+            "files": fileItems,
+            "autoSelectFirst": autoSelectFirst
         ]
         invokeJS("window.markdownStudio.loadNativeFolder", with: payload)
     }
@@ -499,6 +526,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSToolbarDelegate, WKS
                 try content.write(to: url, atomically: true, encoding: .utf8)
                 window.representedURL = url
                 window.isDocumentEdited = false
+                UserDefaults.standard.set(url.path, forKey: Self.lastOpenedFilePathKey)
                 invokeJS("window.markdownStudio.didSaveNativeFile", with: [
                     "name": url.lastPathComponent,
                     "path": url.path
@@ -524,6 +552,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSToolbarDelegate, WKS
                 self?.window.representedURL = url
                 self?.window.isDocumentEdited = false
                 NSDocumentController.shared.noteNewRecentDocumentURL(url)
+                UserDefaults.standard.set(url.path, forKey: Self.lastOpenedFilePathKey)
                 self?.invokeJS("window.markdownStudio.didSaveNativeFile", with: [
                     "name": url.lastPathComponent,
                     "path": url.path
@@ -543,6 +572,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSToolbarDelegate, WKS
     // MARK: - Menu Actions
     @objc func menuNewDocument() {
         window.representedURL = nil
+        UserDefaults.standard.removeObject(forKey: Self.lastOpenedFilePathKey)
         webView.evaluateJavaScript("window.markdownStudio.newDocument();", completionHandler: nil)
     }
 
@@ -556,6 +586,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSToolbarDelegate, WKS
 
     @objc func menuResetDemo() {
         window.representedURL = nil
+        UserDefaults.standard.removeObject(forKey: Self.lastOpenedFilePathKey)
         webView.evaluateJavaScript("window.markdownStudio.resetDemo();", completionHandler: nil)
     }
 

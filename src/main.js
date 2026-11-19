@@ -272,7 +272,15 @@ async function renderMarkdown() {
 
 function scheduleRender() {
   clearTimeout(renderTimer);
-  renderTimer = setTimeout(renderMarkdown, 120);
+  renderTimer = setTimeout(() => {
+    saveLastOpenedToStorage(
+      currentFileName,
+      editor.value,
+      fileSourceType.textContent,
+      currentNativeFilePath
+    );
+    renderMarkdown();
+  }, 120);
 }
 
 // Toggle corresponding `- [ ]` or `- [x]` in editor when user clicks a task list checkbox in preview
@@ -333,6 +341,50 @@ function setDirty(dirty) {
   });
 }
 
+const LAST_OPENED_STORAGE_KEY = 'markdown-studio:last-opened-doc';
+
+function saveLastOpenedToStorage(name, content, sourceLabel, nativePath = null) {
+  try {
+    localStorage.setItem(
+      LAST_OPENED_STORAGE_KEY,
+      JSON.stringify({
+        name,
+        content,
+        sourceLabel,
+        nativePath,
+        updatedAt: Date.now()
+      })
+    );
+  } catch (_) {}
+}
+
+function loadLastOpenedFromStorage() {
+  try {
+    const raw = localStorage.getItem(LAST_OPENED_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed.name === 'string' && typeof parsed.content === 'string') {
+      return parsed;
+    }
+  } catch (_) {}
+  return null;
+}
+
+function syncSidebarSelectionByPathOrName(nativePath, name) {
+  if (!directoryFiles.length) return;
+  Array.from(fileList.querySelectorAll('.file-item-btn')).forEach((btn, idx) => {
+    const item = directoryFiles[idx];
+    const isMatch =
+      (nativePath && item.nativePath === nativePath) || (!nativePath && item.name === name);
+    if (isMatch) {
+      activeFileIndex = idx;
+      btn.setAttribute('aria-current', 'true');
+    } else {
+      btn.removeAttribute('aria-current');
+    }
+  });
+}
+
 function setDocument(name, content, sourceLabel = 'Local file', handle = null, nativePath = null) {
   currentFileName = name;
   currentFileHandle = handle;
@@ -343,6 +395,8 @@ function setDocument(name, content, sourceLabel = 'Local file', handle = null, n
   editor.scrollTop = 0;
   previewContainer.scrollTop = 0;
   setDirty(false);
+  saveLastOpenedToStorage(name, content, sourceLabel, nativePath);
+  syncSidebarSelectionByPathOrName(nativePath, name);
   renderMarkdown();
 }
 
@@ -431,7 +485,7 @@ folderInput.addEventListener('change', (e) => {
   folderInput.value = '';
 });
 
-function populateFileSidebar(entries, sourceLabel) {
+function populateFileSidebar(entries, sourceLabel, autoSelectFirst = true) {
   directoryFiles = entries;
   fileList.replaceChildren();
 
@@ -457,7 +511,11 @@ function populateFileSidebar(entries, sourceLabel) {
   });
 
   fileSidebar.hidden = false;
-  selectSidebarFile(0, sourceLabel);
+  if (autoSelectFirst) {
+    selectSidebarFile(0, sourceLabel);
+  } else {
+    syncSidebarSelectionByPathOrName(currentNativeFilePath, currentFileName);
+  }
 }
 
 async function selectSidebarFile(index, sourceLabel) {
@@ -999,14 +1057,14 @@ window.markdownStudio = {
   loadNativeFile({ name, path, content, sourceLabel = 'macOS Native File' }) {
     setDocument(name, content, sourceLabel, null, path);
   },
-  loadNativeFolder({ folderName, files }) {
+  loadNativeFolder({ folderName, files, autoSelectFirst = true }) {
     const entries = files.map((file) => ({
       name: file.name,
       nativePath: file.path,
       handle: null,
       loadText: async () => ''
     }));
-    populateFileSidebar(entries, `Folder: ${folderName}`);
+    populateFileSidebar(entries, `Folder: ${folderName}`, autoSelectFirst);
   },
   didSaveNativeFile({ name, path }) {
     currentFileName = name;
@@ -1014,6 +1072,7 @@ window.markdownStudio = {
     filenameBadge.textContent = name;
     fileSourceType.textContent = 'Saved to disk (macOS)';
     setDirty(false);
+    saveLastOpenedToStorage(name, editor.value, 'Saved to disk (macOS)', path);
   },
   triggerSave(forceSaveAs = false) {
     saveCurrentFile(forceSaveAs);
@@ -1042,6 +1101,18 @@ window.markdownStudio = {
   }
 };
 
-// --- Initialize App ---
+// --- Initialize App (Restore Last Opened File or Default Demo) ---
 initMermaidTheme();
-setDocument('welcome.md', SAMPLE_MARKDOWN, 'Built-in Demo', null);
+const lastOpened = loadLastOpenedFromStorage();
+if (lastOpened) {
+  setDocument(
+    lastOpened.name,
+    lastOpened.content,
+    lastOpened.sourceLabel || 'Restored Last File',
+    null,
+    lastOpened.nativePath || null
+  );
+} else {
+  setDocument('welcome.md', SAMPLE_MARKDOWN, 'Built-in Demo', null);
+}
+sendNativeMessage('appReady');
